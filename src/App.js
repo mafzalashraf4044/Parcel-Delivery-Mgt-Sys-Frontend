@@ -26,6 +26,28 @@ class App extends React.Component {
     };
   }
 
+  logout = () => {
+    this.setState(prevState => ({
+      user: null,
+      isLoggedIn: false,
+    }));
+  }
+
+  getDrawer = () => {
+    return this.state.user.isAdmin ? <AdminDrawer user={this.state.user} logout={this.logout} /> : <UserDrawer user={this.state.user} logout={this.logout} />;
+  }
+
+  setIsLoggedIn = (isLoggedIn, user) => {
+    this.setState({
+      user,
+      isLoggedIn,
+    })
+  }
+  
+  closeSnackbar = () => {
+    this.props.setResponseMsg(null);
+  }
+
   render() {
     const muiTheme = getMuiTheme({
       palette: {
@@ -38,7 +60,12 @@ class App extends React.Component {
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <div className="app-container">
-
+          {
+            this.props.loader &&
+            <div className="loader">
+              <img src="https://www.willitmaketheboatgofaster.com/wp-content/themes/wimtbgf/images/loading.gif" alt="loader"/>
+            </div>
+          }
         </div>
       </MuiThemeProvider>
     );
