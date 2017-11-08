@@ -46,6 +46,58 @@ class GoogleMapContainer extends React.Component {
     }
   }
 
+  addMarker = (e) => {
+    if (this.props.markersLimit > 0 && this.props.markers.length < this.props.markersLimit) {
+      const markers = [...this.props.markers, {
+        location: {
+          lat: e.latLng.lat(),
+          lng: e.latLng.lng()
+        },
+        label: LOCATION_LABELS[this.props.markers.length + 1],
+        place: '',
+        address: ''
+      }, ];
+      this.props.saveMarkers(markers);
+    }
+  }
+
+  clearMarkers = () => {
+    this.setState({
+      markers: [],
+    });
+  }
+
+  onSearchBoxMounted =  ref => {
+    this.searchBoxRef = ref;
+  }
+
+  onPlacesChanged = () => {
+    const places = this.searchBoxRef.getPlaces();
+    const newMarker = places.map(place => ({
+      location: {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng()
+      },
+      label: LOCATION_LABELS[this.props.markers.length + 1],
+      place: '',
+      address: ''
+    }));
+ 
+    this.props.saveMarkers([...this.props.markers, ...newMarker]);
+  }
+
+  setInfoWindowIndex = (infoWindowIndex) => {
+    this.setState({
+      infoWindowIndex,
+    });
+  }
+
+  removeMarker = (index) => {
+    const markers = [...this.props.markers];
+    markers.splice(index, 1);
+    this.props.saveMarkers(markers);
+  }
+
   render() {
     return (
       <div className="google-map-container">
@@ -74,6 +126,33 @@ class GoogleMapContainer extends React.Component {
                 }
               </Marker>
             )
+          }
+
+          {
+            (this.props.markersLimit > 0 && this.props.markers.length < this.props.markersLimit) &&
+            <SearchBox
+              ref={this.onSearchBoxMounted}
+              controlPosition={window.google.maps.ControlPosition.TOP_CENTER}
+              onPlacesChanged={this.onPlacesChanged}
+            >
+              <input
+                type="text"
+                placeholder="Search here..."
+                style={{
+                  boxSizing: `border-box`,
+                  border: `1px solid transparent`,
+                  width: `440px`,
+                  height: `32px`,
+                  marginTop: `27px`,
+                  padding: `0 12px`,
+                  borderRadius: `3px`,
+                  boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`,
+                  fontSize: `14px`,
+                  outline: `none`,
+                  textOverflow: `ellipses`,
+                }}
+              />
+            </SearchBox>
           }
         </GoogleMap>
 
