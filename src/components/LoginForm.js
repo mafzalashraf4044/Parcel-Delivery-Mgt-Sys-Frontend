@@ -26,6 +26,30 @@ class LoginForm extends React.Component {
         };
     }
 
+    login = () => {
+        this.props.setLoader(true);
+
+        this.props.login({username: this.state.username, password: this.state.password}).then((res) => {
+            if (res.status === 200) {
+                this.props.setLoader(false);
+                this.props.setResponseMsg(res.data.data.msg);
+                this.props.setIsLoggedIn(true, res.data.data.user);
+            }
+        }).catch((err) => {
+            this.props.setLoader(false);
+            this.props.setResponseMsg(err.response.data.msg);
+        });
+    }
+
+    handleChange = (e) => {
+        const value = e.target.value;
+        const key = e.target.getAttribute('data-key');
+        
+        this.setState({
+            [key]: value,
+        });
+    }
+
     render() {
         return (
             <div className="login-container paper-container">
