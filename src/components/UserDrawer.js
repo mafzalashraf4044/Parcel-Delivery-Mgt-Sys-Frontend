@@ -56,6 +56,52 @@ class UserDrawer extends React.Component {
         });
     }
 
+    toggleDrawer = () => {
+        this.setState(prevState => ({
+            isDrawerOpen: !prevState.isDrawerOpen
+        }));
+    }
+
+    openViewTask = (selectedTaskIndex) => {
+      this.setState({
+        isDrawerOpen: false,
+        selectedTaskIndex,
+      });
+    }
+
+    closeViewTask = () => {
+      this.setState({
+        selectedTaskIndex: -1,
+      }, () => {
+          this.props.setDirections(null);
+      });
+    }
+
+    saveTasks = (tasks) => {
+        this.setState({
+            tasks,
+        });
+    }
+
+    markCompleted = (index) => {
+        const task = this.state.tasks[index];
+        this.props.editTask({id: task.id, isCompleted: true}).then((res) => {
+            if (res.status === 200) {
+                const tasks = this.state.tasks;
+                tasks[index].isCompleted = true;
+
+                this.setState({
+                    tasks,
+                }, () => {
+                    this.props.setLoader(false);
+                });
+            }
+        }).catch((err) => {
+            this.props.setLoader(false);
+            this.props.setResponseMsg(err.response.data.msg);
+        });
+    }
+
     render() {
         return (
             <div className="drawer-container">
