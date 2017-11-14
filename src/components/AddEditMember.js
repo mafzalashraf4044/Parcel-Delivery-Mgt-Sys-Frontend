@@ -56,6 +56,89 @@ class AddEditMember extends React.Component {
                               onChange={this.handleChange}
                             />
                         </div>
+
+                        <div className="username input-field">
+                            <TextField
+                              type="text"
+                              fullWidth
+                              floatingLabelText="Username"
+                              data-key="username"
+                              value={member.username}
+                              onChange={this.handleChange}
+                            />
+                        </div>
+
+                        {
+                            this.props.isAddMember &&
+                            <div className="password input-field">
+                                <TextField
+                                  type="password"
+                                  fullWidth
+                                  floatingLabelText="Password"
+                                  data-key="password"
+                                  value={member.password}
+                                  onChange={this.handleChange}
+                                />
+                            </div>
+                        }
+
+                        <div className="phoneNumber input-field">
+                            <TextField
+                              type="text"
+                              fullWidth
+                              floatingLabelText="Phone Number"
+                              data-key="phoneNumber"
+                              value={member.phoneNumber}
+                              onChange={this.handleChange}
+                            />
+                        </div>
+
+                        <div className="email input-field">
+                            <TextField
+                              type="text"
+                              fullWidth
+                              floatingLabelText="Email"
+                              data-key="email"
+                              value={member.email}
+                              onChange={this.handleChange}
+                            />
+                        </div>
+
+                        <div className="address input-field">
+                            <TextField
+                              type="text"
+                              fullWidth
+                              floatingLabelText="Address"
+                              data-key="address"
+                              value={member.address}
+                              onChange={this.handleChange}
+                            />
+                        </div>
+
+
+                        <div className="vehicleType input-field">
+                            <TextField
+                              type="text"
+                              fullWidth
+                              floatingLabelText="Vehicle Type"
+                              data-key="vehicleType"
+                              value={member.vehicleType}
+                              onChange={this.handleChange}
+                            />
+                        </div>
+                        {
+                            !this.props.isAddMember &&
+                            <div className="tasksCompleted input-field">
+                                <TextField
+                                type="text"
+                                fullWidth
+                                floatingLabelText="Tasks Completed"
+                                data-key="tasksCompleted"
+                                value={member.tasksCompleted}
+                                />
+                            </div>
+                        }
+
                     </div>
                     <div className="actions">
                         <FlatButton label="Close" labelStyle={{ color: 'red' }} onClick={this.props.close} />
