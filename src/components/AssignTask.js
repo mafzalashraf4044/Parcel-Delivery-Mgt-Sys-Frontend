@@ -51,6 +51,49 @@ class AssignTask extends React.Component {
       });
     }
 
+    handleMemberChange = (event, index, memberId) => {
+      this.setState({
+        memberIndexForAssignTask: index,
+      });
+    }
+
+    handleChange = (e) => {
+      const value = e.target.value;
+      const key = e.target.getAttribute('data-key');
+      
+      this.setState({
+       [key]: value,
+      });
+    }
+
+    handleDateChange = (e, date) => {
+      this.setState({
+        date,
+      });
+    }
+
+    toggleAddMarkersEnable = () => {
+      if (this.props.markersLimit === 0) {
+        this.props.setMarkersLimit(10);
+      } else {
+        this.props.setMarkersLimit(0);
+      }
+    }
+
+    toggleMarkersData = () => {
+      this.setState(prevState => ({
+        showMarkersData: !prevState.showMarkersData,
+      }));
+    }
+
+    handleAddressChange = (address, index) => {
+      const markers = this.state.markers;
+      markers[index].address = address;
+      this.setState({
+        markers,
+      });
+    }
+
     render() {
         return (
             <div className={`assign-task-container paper-container ${this.props.markersLimit > 0 && 'add-markers-enabled'}`}>
