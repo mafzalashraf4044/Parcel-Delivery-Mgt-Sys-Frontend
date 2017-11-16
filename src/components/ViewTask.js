@@ -183,6 +183,78 @@ class ViewTask extends React.Component {
                         Task
                     </div>
 
+                    <div className="view-task-form form">
+                        {
+                          !this.state.showMarkersData ? 
+                          <div className="other-data">
+                            <div className="assigned-to input-field">
+                              <TextField
+                                type="text"
+                                fullWidth
+                                floatingLabelText="Status"
+                                value={this.state.task.isCompleted ? 'Completed' : 'Not Completed'}
+                              />
+                            </div>
+
+                            <div className="task-date input-field">
+                              <TextField
+                                type="text"
+                                fullWidth
+                                floatingLabelText="Date"
+                                value={moment(this.state.task.date).format('YYYY-MM-DD')}
+                              />
+                            </div>
+
+                            <div className="amount input-field">
+                                <TextField
+                                  type="text"
+                                  fullWidth
+                                  floatingLabelText="Amount"
+                                  value={this.state.task.amount}
+                                />
+                            </div>
+
+                            <div className="your-location input-field">
+                              <StandaloneSearchBox
+                                ref={this.onSearchBoxMounted}
+                                onPlacesChanged={this.onPlacesChanged}
+                              >
+                                <TextField
+                                  type="text"
+                                  fullWidth
+                                  floatingLabelText="Your Location"
+                                  defaultValue={this.state.yourAddress}
+                                />
+                              </StandaloneSearchBox>
+                            </div>
+
+                          </div> :
+                          <div className="markers-data">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHeaderColumn style={{width: '30px'}}>Lable</TableHeaderColumn>
+                                  <TableHeaderColumn>Location</TableHeaderColumn>
+                                  <TableHeaderColumn>Address</TableHeaderColumn>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {
+                                  this.state.task.markers.map((marker, index) => {
+                                    return (
+                                      <TableRow>
+                                        <TableRowColumn style={{width: '30px'}}>{marker.label}</TableRowColumn>
+                                        <TableRowColumn>{marker.place}</TableRowColumn>
+                                        <TableRowColumn>{marker.address}</TableRowColumn>
+                                      </TableRow>
+                                    );
+                                  })
+                                }
+                              </TableBody>
+                            </Table>
+                          </div>
+                        }
+                    </div>
                     <div className="actions">
                         <div className="actions-left">
                           {
