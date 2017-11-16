@@ -45,6 +45,136 @@ class ViewTask extends React.Component {
         };
     }
 
+    toggleMarkersData = () => {
+      this.setState(prevState => ({
+        showMarkersData: !prevState.showMarkersData,
+      }));
+    }
+
+    toggleViewPath = () => {
+      this.setState(prevState => ({
+        viewPath: !prevState.viewPath,
+      }))
+    }
+
+    onSearchBoxMounted =  ref => {
+      this.searchBoxRef = ref;
+    }
+  
+    onPlacesChanged = (e) => {
+      const places = this.searchBoxRef.getPlaces();
+
+      const newMarker = places.map(place => ({location: place.geometry.location, label: 'A', place: place.formatted_address, address: 'your-address'}));
+   
+      const task = Object.assign({}, this.state.task);
+
+      if (this.state.yourAddress) {
+        task.markers.splice(0, 1);
+      }
+
+      task.markers = [...newMarker, ...task.markers];
+
+      this.setState({
+        task,
+        yourAddress: newMarker[0].place,
+      });
+    }
+
+    calculatePath = () => {
+      if (!this.props.directions){
+        const timeNow = Date.now()/1000;
+        this.props.setLoader(true);
+
+        this.props.getMinDistance({markers: this.state.task.markers}).then((res) => {
+            if (res.status === 200) {
+
+              const markersAsOrigin = res.data.data.markersAsOrigin;
+
+              for (let i = 0; i < markersAsOrigin.length; i++) {
+                markersAsOrigin[i].splice(i, 0, undefined);
+              }
+        
+              let visited = [];
+              let minDestinations = [];
+              let currentOrigin = 'A';
+              
+              for (let i = 0; i < markersAsOrigin.length; i++) {
+                  if ( LOCATION_LABELS.indexOf(currentOrigin) < 0) {
+                      break;
+                  }
+                      
+                  visited.push(currentOrigin);
+        
+                  let destinations = markersAsOrigin[LOCATION_LABELS.indexOf(currentOrigin)].filter((destination, index) => {
+                      return destination && visited.indexOf(destination.label) === -1;
+                  });
+        
+                  if (destinations.length === 0) {
+                      const origin = markersAsOrigin[LOCATION_LABELS.indexOf(currentOrigin)];
+        
+                      minDestinations.push({
+                        index: currentOrigin,
+                        // eslint-disable-next-line
+                        origin: _.find(this.state.task.markers, (o) => o.label === currentOrigin),
+                        minDestination: _.find(origin, (o) => o.label === 'A'),
+                        visited: _.clone(visited),
+                        nextOrigin: null,
+                      });
+    
+                      break;
+                  }
+        
+                  const minDestination = _.minBy(destinations, destination => destination.distance);
+        
+                  minDestinations.push({
+                    index: currentOrigin,
+                    // eslint-disable-next-line
+                    origin: _.find(this.state.task.markers, (o) => o.label === currentOrigin),
+                    minDestination: minDestination,
+                    visited: _.clone(visited),
+                    nextOrigin: minDestination.label,
+                  });
+                  currentOrigin = minDestination.label;
+              }
+              
+              this.toggleViewPath();
+      
+              let waypts = [];
+              
+              minDestinations.forEach((minDestination, index) => {
+                if (minDestination.index !== 'A') {
+                  waypts.push({
+                    location: minDestination.origin.location,
+                  });
+                }
+              });
+    
+              const DirectionsService = new window.google.maps.DirectionsService();
+              
+              DirectionsService.route({
+                origin: minDestinations[0].origin.location,
+                destination: minDestinations[0].origin.location,
+                waypoints: waypts,
+                travelMode: window.google.maps.TravelMode.DRIVING,
+              }, (result, status) => {
+                this.props.setLoader(false);
+                if (status === window.google.maps.DirectionsStatus.OK) {
+                  this.props.setDirections(result);
+                } else {
+                  this.props.setResponseMsg(res.data.data.msg);
+                }
+              });
+
+            }
+        }).catch((err) => {
+          this.props.setLoader(false);
+          this.props.setResponseMsg(err.response.data.msg);
+        });
+      } else {
+        this.toggleViewPath();
+      }
+    }
+
     render() {
         return (
             <div className={`view-task-container paper-container ${this.state.viewPath > 0 && 'view-path'}`}>
