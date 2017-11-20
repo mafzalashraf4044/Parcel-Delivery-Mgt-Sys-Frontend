@@ -82,7 +82,6 @@ class ViewTask extends React.Component {
 
     calculatePath = () => {
       if (!this.props.directions){
-        const timeNow = Date.now()/1000;
         this.props.setLoader(true);
 
         this.props.getMinDistance({markers: this.state.task.markers}).then((res) => {

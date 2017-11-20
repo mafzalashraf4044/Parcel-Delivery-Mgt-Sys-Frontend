@@ -66,6 +66,29 @@ class App extends React.Component {
               <img src="https://www.willitmaketheboatgofaster.com/wp-content/themes/wimtbgf/images/loading.gif" alt="loader"/>
             </div>
           }
+
+          {
+            this.props.responseMsg &&
+            <Snackbar
+              open={this.props.responseMsg}
+              message={this.props.responseMsg}
+              autoHideDuration={4000}
+              onRequestClose={this.closeSnackbar}
+            />
+          }
+
+          {
+            this.state.isLoggedIn ?
+            this.getDrawer() :
+            <LoginForm setIsLoggedIn={this.setIsLoggedIn} />
+          }
+
+          <GoogleMapContainer
+            markersLimit={this.props.markersLimit}
+            markers={this.props.markers}
+            saveMarkers={this.props.saveMarkers}
+            directions={this.props.directions}
+          />
         </div>
       </MuiThemeProvider>
     );
